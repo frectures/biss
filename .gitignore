@@ -1,0 +1,12 @@
+# Maven
+/target/
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+
+# Eclipse
+# Visual Studio Code
+/.classpath
+/.project
+/.settings/
