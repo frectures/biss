@@ -21,9 +21,6 @@ public class Compiler {
 
     private static final Pattern LEXEMES = Pattern.compile("x|[0-9]+|[-+*/]|root|[^\\s]");
 
-    private static final Map<String, Integer> INSTRUCTIONS = Map.of(
-            "*", DMUL, "/", DDIV, "+", DADD, "-", DSUB);
-
     public static DoubleUnaryOperator compiled(String formula) {
         return new Parser<DoubleUnaryOperator>(LEXEMES.matcher(formula)) {
             MethodVisitor mv;
@@ -36,21 +33,10 @@ public class Compiler {
                         "java/lang/Object",
                         new String[]{"java/util/function/DoubleUnaryOperator"});
 
-                // default constructor
-                mv = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-                mv.visitCode();
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-                mv.visitInsn(RETURN);
-                mv.visitEnd();
-                mv.visitMaxs(0, 0); // compute automatically
-
                 // applyAsDouble
                 mv = classWriter.visitMethod(ACC_PUBLIC, "applyAsDouble", "(D)D", null, null);
                 mv.visitCode();
-                subexpression(0);
-                expect(END);
-                mv.visitInsn(DRETURN);
+                // ...
                 mv.visitEnd();
                 mv.visitMaxs(0, 0); // compute automatically
 
@@ -77,7 +63,7 @@ public class Compiler {
                 while (leftPrecedence < (rightPrecedence = PRECEDENCE.getOrDefault(lexeme, -1))) {
                     String operator = accept();
                     subexpression(rightPrecedence);
-                    mv.visitInsn(INSTRUCTIONS.get(operator));
+                    // ...
                 }
             }
 
@@ -93,18 +79,18 @@ public class Compiler {
                     case '7':
                     case '8':
                     case '9':
-                        mv.visitLdcInsn(Double.parseDouble(accept()));
+                        // ...
                         return;
 
                     case 'x':
                         advance();
-                        mv.visitVarInsn(DLOAD, 1);
+                        // ...
                         return;
 
                     case '-':
                         advance();
                         subexpression(14);
-                        mv.visitInsn(DNEG);
+                        // ...
                         return;
 
                     case '(':
@@ -118,7 +104,7 @@ public class Compiler {
                         expect("(");
                         subexpression(0);
                         expect(")");
-                        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Math", "sqrt", "(D)D", false);
+                        // ...
                         return;
 
                     default:
